@@ -21,7 +21,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v14
 
       - name: Enable Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+        uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Evaluate hosts and users
         run: |
@@ -46,7 +46,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v14
 
       - name: Enable Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+        uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Check formatting with alejandra
         run: nix run nixpkgs#alejandra -- -c .
@@ -63,7 +63,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v14
 
       - name: Enable Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+        uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: nix flake check
         run: nix flake check --show-trace
@@ -84,7 +84,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v14
 
       - name: Enable Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+        uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Build ${{ matrix.host }} toplevel
         run: |
@@ -108,7 +108,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v14
 
       - name: Enable Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+        uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Build HM activation for ${{ matrix.user }}
         run: |
@@ -128,7 +128,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v14
 
       - name: Enable Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v8
+        uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: List hosts
         run: nix eval --json --file scripts/hosts.nix | nix run nixpkgs#jq -- .
