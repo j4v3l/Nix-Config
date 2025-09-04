@@ -1,0 +1,26 @@
+name: Feature request
+description: Propose an enhancement or new capability
+title: "feat: <brief description>"
+labels: [enhancement]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What's the problem and what's the proposed change?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Hosts/users affected, and config files likely impacted.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks / rollout plan
+      description: Backward compatibility, secret handling, migration steps.

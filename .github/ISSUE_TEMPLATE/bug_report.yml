@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a problem with this Nix/NixOS configuration
+title: "bug: <brief description>"
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug and the expected behavior.
+      placeholder: Clear steps to reproduce and what you expected to happen.
+    validations:
+      required: true
+  - type: input
+    id: host
+    attributes:
+      label: Host
+      description: Which host does this affect?
+      placeholder: desktop | laptop | vm
+  - type: input
+    id: username
+    attributes:
+      label: Username
+      description: Which Home Manager user (if relevant)?
+      placeholder: vmware
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1. …
+        2. …
+        3. …
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs/output
+      description: Paste relevant output (e.g., nix build logs) or attach as files.
+      render: bash
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-checks
+      options:
+        - label: Ran `nix flake check`
+        - label: Built the affected target (host or HM) locally
+        - label: Verified secrets or hardware config files exist where required

@@ -1,0 +1,7 @@
+# Statix configuration
+# Ignore generated hardware-configuration files and secrets folder
+[disable]
+paths = [
+  "hosts/*/hardware-configuration.nix",
+  "secrets/**"
+]

@@ -1,0 +1,140 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  discover:
+    name: Discover hosts and users
+    runs-on: ubuntu-latest
+    outputs:
+      hosts: ${{ steps.set.outputs.hosts }}
+      users: ${{ steps.set.outputs.users }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Enable Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Evaluate hosts and users
+        run: |
+          nix eval --json --file scripts/hosts.nix > hosts.json
+          nix eval --json --file scripts/home-users.nix > users.json
+          echo Hosts: $(cat hosts.json)
+          echo Users: $(cat users.json)
+      - name: Set outputs
+        id: set
+        run: |
+          echo "hosts=$(cat hosts.json | tr -d '\n')" >> "$GITHUB_OUTPUT"
+          echo "users=$(cat users.json | tr -d '\n')" >> "$GITHUB_OUTPUT"
+
+  lint-format:
+    name: Format (alejandra)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Enable Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Check formatting with alejandra
+        run: nix run nixpkgs#alejandra -- -c .
+
+  flake-check:
+    name: nix flake check
+    runs-on: ubuntu-latest
+    needs: [lint-format]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Enable Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: nix flake check
+        run: nix flake check --show-trace
+
+  build-hosts:
+    name: Build NixOS hosts
+    runs-on: ubuntu-latest
+    needs: [flake-check, discover]
+    strategy:
+      fail-fast: false
+      matrix:
+        host: ${{ fromJSON(needs.discover.outputs.hosts) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Enable Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Build ${{ matrix.host }} toplevel
+        run: |
+          nix build \
+            .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel \
+            --print-build-logs
+
+  build-home:
+    name: Build Home Manager configs
+    runs-on: ubuntu-latest
+    needs: [flake-check, discover]
+    strategy:
+      fail-fast: false
+      matrix:
+        user: ${{ fromJSON(needs.discover.outputs.users) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Enable Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Build HM activation for ${{ matrix.user }}
+        run: |
+          nix build \
+            .#homeConfigurations.${{ matrix.user }}.activationPackage \
+            --print-build-logs
+
+  eval-scripts:
+    name: Evaluate helper scripts
+    runs-on: ubuntu-latest
+    needs: [flake-check]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Enable Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: List hosts
+        run: nix eval --json --file scripts/hosts.nix | nix run nixpkgs#jq -- .
+
+      - name: List home users
+        run: nix eval --json --file scripts/home-users.nix | nix run nixpkgs#jq -- .
+
+      - name: Check secrets presence
+        run: nix eval --json --file scripts/check-secrets.nix | nix run nixpkgs#jq -- .

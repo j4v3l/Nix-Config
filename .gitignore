@@ -1,0 +1,28 @@
+# Nix build results
+/result
+/result*
+
+# direnv and local env files
+/.direnv/
+/.envrc
+/.env
+/.env.*
+
+# Editor/IDE artifacts
+/.cache/
+/.vscode/
+/.idea/
+*.swp
+*~
+\#*\#
+.DS_Store
+
+# Local files created by CI discovery steps if run manually
+/hosts.json
+/users.json
+
+# Private local modules and sensitive overrides
+/private/
+
+# ignore all hardware-configuration in all hosts/
+hosts/*/hardware-configuration.nix
