@@ -16,11 +16,12 @@
       ../shared/base.nix
       ../../home/profiles/user.nix
       ../../home/profiles/vm/vm.nix
+      ./display.nix
     ];
 
   networking.hostName = "vm";
 
-  # VM friendly: no heavy desktop by default; leave X disabled
+  # VM-friendly defaults; display/desktop configured in ./display.nix
   services = {
     qemuGuest.enable = lib.mkDefault true;
   };
