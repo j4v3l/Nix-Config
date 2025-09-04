@@ -16,6 +16,21 @@
   console.keyMap = "us";
 
   # Enable basic services
+  # Automatic system updates (unattended)
+  system.autoUpgrade = {
+    enable = true;
+    allowReboot = false;
+    dates = "weekly";
+  };
+
+  # Automatic time sync
+  services.timesyncd.enable = true;
+
+  # Nix garbage collection
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+  };
   services.openssh.enable = lib.mkDefault true;
   security.sudo.enable = true;
   security.polkit.enable = true;
